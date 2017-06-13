@@ -41,6 +41,7 @@
     <Compile Include="Controls\BindablePicker.cs" />
     <Compile Include="Infrastructure\InstanceLocator.cs" />
     <Compile Include="Models\ExchangeRates.cs" />
+    <Compile Include="Models\RatesDescrption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">

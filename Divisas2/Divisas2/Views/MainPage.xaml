@@ -22,7 +22,7 @@
             </Label>
             <control:BindablePicker
                 Title="Seleccione moneda origen..."
-                DisplayMemberPath="Code" 
+                DisplayMemberPath="Name" 
                 SelectedValuePath="TaxRate"
                 ItemsSource="{Binding Rates}"
                 SelectedValue="{Binding Path=SourceRate, Mode=TwoWay}"
@@ -48,7 +48,7 @@
             </StackLayout>
             <control:BindablePicker
                 Title="Seleccione moneda destino..."
-                DisplayMemberPath="Code"
+                DisplayMemberPath="Name"
                 SelectedValuePath="TaxRate"
                 ItemsSource="{Binding Rates}"
                 SelectedValue="{Binding Path=TargetRate, Mode=TwoWay}"

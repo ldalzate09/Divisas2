@@ -18,6 +18,7 @@ namespace Divisas2.ViewModels
 
         #region Attributes
         private ExchangeRates exchangeRates;
+        private RatesDescrption ratesDescription;
         private bool isRunning;
         private bool isEnabled;
         private String message;
@@ -27,6 +28,7 @@ namespace Divisas2.ViewModels
 
         #region Properties
         public ObservableCollection<Rate> Rates { get; set; }
+        public ObservableCollection<RatesDescrption> RateDescription { get; set; }
         public decimal Amount { get; set; }
         public double SourceRate {
             set
@@ -110,6 +112,7 @@ namespace Divisas2.ViewModels
         public MainViewModel()
         {
             Rates = new ObservableCollection<Rate>();
+            RateDescription = new ObservableCollection<RatesDescrption>();
             GetRates();
         }
         #endregion
@@ -135,6 +138,20 @@ namespace Divisas2.ViewModels
 
                 var result = await response.Content.ReadAsStringAsync();
                 exchangeRates = JsonConvert.DeserializeObject<ExchangeRates>(result);
+
+                client.BaseAddress = new Uri("https://gist.githubusercontent.com");
+                url = "picodotdev/88512f73b61bc11a2da4/raw/9407514be22a2f1d569e75d6b5a58bd5f0ebbad8";
+                response = await client.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await App.Current.MainPage.DisplayAlert("Error", response.StatusCode.ToString(), "Aceptar");
+                    IsRunning = false;
+                    IsEnabled = false;
+                    return;
+                }
+
+                result = await response.Content.ReadAsStringAsync();
+                ratesDescription = JsonConvert.DeserializeObject<RatesDescrption>(result);
             }
             catch (Exception ex)
             {
@@ -152,17 +169,30 @@ namespace Divisas2.ViewModels
         private void LoadRates()
         {
             Rates.Clear();
+            RateDescription.Clear();
+
             var type = typeof(Rates);
+            var typeDescription = typeof(RatesDescrption);
+
             var properties = type.GetRuntimeFields();
+            var propertiesDescription = typeDescription.GetRuntimeFields();
 
             foreach (var property in properties)
             {
                 var code = property.Name.Substring(1, 3);
-                Rates.Add(new Rate
+                foreach(var description in propertiesDescription)
                 {
-                    Code = code,
-                    TaxRate = (double)property.GetValue(exchangeRates.Rates),
-                });
+                    var codeDescription = description.Name.Substring(1, 3);
+                    if (code.Equals(codeDescription))
+                    {
+                        Rates.Add(new Rate
+                        {
+                            Code = code,
+                            TaxRate = (double)property.GetValue(exchangeRates.Rates),
+                            Name = code + " - " + (string)description.GetValue(ratesDescription),
+                        });
+                    }
+                }
             }
         }
         #endregion
