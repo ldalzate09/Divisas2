@@ -29,6 +29,24 @@ namespace Divisas2.Services
             }
         }
 
+        public T DeleteAndInsert<T>(T model) where T : class
+        {
+            try
+            {
+                using (var da = new DataAccess())
+                {
+                    da.Delete(model);
+                    da.Insert(model);
+                    return model;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return model;
+            }
+        }
+
         public T InsertOrUpdate<T>(T model) where T : class
         {
             try

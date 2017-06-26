@@ -202,4 +202,12 @@ namespace Divisas2.Models
 
         public string Name { get; set; }
     }
+
+    public class Preference
+    {
+        [PrimaryKey]
+        public string Code { get; set; }
+
+        public string Tipo { get; set; }
+    }
 }

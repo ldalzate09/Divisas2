@@ -9,78 +9,88 @@
     <ContentPage.Content>
         <ScrollView>
           <StackLayout
-              Padding="8">
-            <Label
-                Text="Valor a convertir:">
-            </Label>
-            <Entry
-                Keyboard="Numeric"
-                Text="{Binding Amount}">
-            </Entry>
-            <Label
-                Text="Moneda origen:">
-            </Label>
-            <control:BindablePicker
-                Title="Seleccione moneda origen..."
-                DisplayMemberPath="Name" 
-                SelectedValuePath="TaxRate"
-                ItemsSource="{Binding Rates}"
-                SelectedValue="{Binding Path=SourceRate, Mode=TwoWay}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center"
-                SelectedItem="{Binding OrigenRate, Mode=TwoWay}">
-            </control:BindablePicker>
-            <StackLayout
-                Orientation="Horizontal">
+                Padding="8">
                 <Label
-                    VerticalOptions="Center"
-                    HorizontalOptions="StartAndExpand"
-                    Text="Moneda destino:">
+                    Text="Valor a convertir:">
                 </Label>
-                <Image
-                    HorizontalOptions="End"
-                    Source="invert.png">
-                    <Image.GestureRecognizers>
+                <Entry
+                    Keyboard="Numeric"
+                    Text="{Binding Amount}">
+                </Entry>
+                <Label
+                    Text="Moneda origen:">
+                </Label>
+                <control:BindablePicker
+                    Title="Seleccione moneda origen..."
+                    DisplayMemberPath="Name" 
+                    SelectedValuePath="TaxRate"
+                    ItemsSource="{Binding Rates}"
+                    SelectedValue="{Binding Path=SourceRate, Mode=TwoWay}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center"
+                    SelectedItem="{Binding OrigenRate, Mode=TwoWay}">
+                </control:BindablePicker>
+                <StackLayout
+                    Orientation="Horizontal">
+                    <Label
+                        VerticalOptions="Center"
+                        HorizontalOptions="StartAndExpand"
+                        Text="Moneda destino:">
+                    </Label>
+                    <Image
+                        HorizontalOptions="End"
+                        Source="invert.png">
+                        <Image.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding ChangeCommand}">
+                                    Command="{Binding ChangeCommand}">
                             </TapGestureRecognizer>
-                    </Image.GestureRecognizers>
-                </Image>
+                        </Image.GestureRecognizers>
+                    </Image>
+                </StackLayout>
+                <control:BindablePicker
+                    Title="Seleccione moneda destino..."
+                    DisplayMemberPath="Name"
+                    SelectedValuePath="TaxRate"
+                    ItemsSource="{Binding Rates}"
+                    SelectedValue="{Binding Path=TargetRate, Mode=TwoWay}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center"
+                    SelectedItem="{Binding DestinoRate, Mode=TwoWay}">
+                </control:BindablePicker>
+                <Button
+                    Command="{Binding ConvertCommand}"
+                    IsEnabled="{Binding IsEnabled}"
+                    Text="Convertir"
+                    BackgroundColor="Navy"
+                    TextColor="White"
+                    HeightRequest="40"
+                    BorderRadius="20">
+                </Button>
+                <ActivityIndicator
+                    IsRunning="{Binding IsRunning}">
+                </ActivityIndicator>
+                <Label
+                    Text="{Binding Message}"
+                    BackgroundColor="Silver"
+                    TextColor="Purple"
+                    FontAttributes="Bold"
+                    FontSize="Medium"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
+                </Label>
+                <Label
+                    Text="{Binding MessageMode}"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    FontSize="Small"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
+                </Label>
             </StackLayout>
-            <control:BindablePicker
-                Title="Seleccione moneda destino..."
-                DisplayMemberPath="Name"
-                SelectedValuePath="TaxRate"
-                ItemsSource="{Binding Rates}"
-                SelectedValue="{Binding Path=TargetRate, Mode=TwoWay}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center"
-                SelectedItem="{Binding DestinoRate, Mode=TwoWay}">
-            </control:BindablePicker>
-            <Button
-                Command="{Binding ConvertCommand}"
-                IsEnabled="{Binding IsEnabled}"
-                Text="Convertir"
-                BackgroundColor="Navy"
-                TextColor="White"
-                HeightRequest="40"
-                BorderRadius="20">
-            </Button>
-            <ActivityIndicator
-                IsRunning="{Binding IsRunning}">
-            </ActivityIndicator>
-            <Label
-                Text="{Binding Message}"
-                BackgroundColor="Silver"
-                TextColor="Purple"
-                FontAttributes="Bold"
-                FontSize="Medium"
-                HorizontalTextAlignment="Center"
-                VerticalTextAlignment="Center"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand">
-            </Label>
-          </StackLayout>
         </ScrollView>
     </ContentPage.Content>
 </ContentPage>

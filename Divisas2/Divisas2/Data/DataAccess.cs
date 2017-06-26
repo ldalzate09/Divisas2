@@ -17,8 +17,9 @@ namespace Divisas2.Data
         {
             var config = DependencyService.Get<IConfig>();
             connection = new SQLiteConnection(config.Platform,
-                         System.IO.Path.Combine(config.DirectoryDB, "Divisas.db3"));
+                         System.IO.Path.Combine(config.DirectoryDB, "Divisas2.db3"));
             connection.CreateTable<Rate>();
+            connection.CreateTable<Preference>();
         }
 
         public void Insert<T>(T model)

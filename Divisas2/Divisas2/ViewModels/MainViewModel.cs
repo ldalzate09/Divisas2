@@ -23,11 +23,11 @@ namespace Divisas2.ViewModels
         private RatesDescrption ratesDescription;
         private Rate rate;
         private ApiService apiService;
-        private DialogService dialogService;
         private DataService dataService;
         private bool isRunning;
         private bool isEnabled;
         private String message;
+        private String messageMode;
         private double sourceRate;
         private double targetRate;
         private Rate origenRate;
@@ -98,6 +98,22 @@ namespace Divisas2.ViewModels
             }
         }
 
+        public String MessageMode
+        {
+            set
+            {
+                if (messageMode != value)
+                {
+                    messageMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MessageMode"));
+                }
+            }
+            get
+            {
+                return messageMode;
+            }
+        }
+
         public bool IsEnabled
         {
             set
@@ -152,7 +168,6 @@ namespace Divisas2.ViewModels
         {
             Rates = new ObservableCollection<Rate>();
             apiService = new ApiService();
-            dialogService = new DialogService();
             dataService = new DataService();
 
             GetModeRates();
@@ -171,7 +186,7 @@ namespace Divisas2.ViewModels
                 rate = dataService.First<Rate>(false);
                 if (rate != null)
                 {
-                    //await App.Current.MainPage.DisplayAlert("Informacion", "Las tasas a convertir no estan actualizadas", "Accept");
+                    MessageMode = "Tasas Cargadas Localmente";
                     LoadRatesOffLine();
                     IsRunning = false;
                     IsEnabled = true;
@@ -180,12 +195,13 @@ namespace Divisas2.ViewModels
                 {
                     IsRunning = false;
                     IsEnabled = false;
-                    await dialogService.ShowMessage("Error", checkConnetion.Message);
+                    await App.Current.MainPage.DisplayAlert("Error", checkConnetion.Message, "Aceptar");
                     return;
                 }
             }
             else
             {
+                MessageMode = "Tasas Cargadas de Internet";
                 GetRates();
             }
         }
@@ -256,19 +272,21 @@ namespace Divisas2.ViewModels
                     var codeDescription = description.Name.Substring(1, 3);
                     if (code.Equals(codeDescription))
                     {
-                        rate = new Rate();
-                        rate.Code = code;
-                        rate.TaxRate = (double)property.GetValue(exchangeRates.Rates);
-                        rate.Name = code + " - " + (string)description.GetValue(ratesDescription);
-
+                        var newRate = new Rate();
+                        newRate.Code = code;
+                        newRate.TaxRate = (double)property.GetValue(exchangeRates.Rates);
+                        newRate.Name = code + " - " + (string)description.GetValue(ratesDescription);
                         //Almacenar en BD
-                        dataService.InsertOrUpdate(rate);
+                        dataService.DeleteAndInsert<Rate>(newRate);
                         // Se carga a la ObservableCollection
-                        Rates.Add(rate);
+                        Rates.Add(newRate);
+                        //Consultar Preferencias
+                        ConsultarPreferencias(newRate);
                         break;
                     }
                 }
             }
+            
         }
 
         private void LoadRatesOffLine()
@@ -280,6 +298,71 @@ namespace Divisas2.ViewModels
             for (int i = 0; i < rateList.Count; i++)
             {
                 Rates.Add(rateList[i]);
+                //Consultar Preferencias
+                ConsultarPreferencias(rateList[i]);
+            }
+        }
+
+        private void ConsultarPreferencias(Rate RateShow)
+        {
+            var preference = new List<Preference>();
+            preference = dataService.Get<Preference>(false);
+
+            for (int i = 0; i < preference.Count; i++)
+            {
+                if (preference[i].Code.Equals(RateShow.Code))
+                {
+                    if (preference[i].Tipo.Equals("Origen"))
+                    {
+                        OrigenRate = RateShow;
+                        break;
+                    }
+                    else
+                    {
+                        DestinoRate = RateShow;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void SaveItemSelected(Rate MonedaOrigen, Rate MonedaDestino)
+        {
+            var preference = new List<Preference>();
+            preference = dataService.Get<Preference>(false);
+
+            var newPreferenceOrigen = new Preference();
+            var newPreferenceDestino = new Preference();
+
+            if (preference.Count == 0)
+            {
+                newPreferenceOrigen.Code = MonedaOrigen.Code;
+                newPreferenceOrigen.Tipo = "Origen";
+                dataService.Insert<Preference>(newPreferenceOrigen);
+
+                newPreferenceDestino.Code = MonedaDestino.Code;
+                newPreferenceDestino.Tipo = "Destino";
+                dataService.Insert<Preference>(newPreferenceDestino);
+            }
+            else
+            {
+                for (int i = 0; i < preference.Count; i++)
+                {
+                    if (!preference[i].Tipo.Equals("Origen") && !preference[i].Code.Equals(MonedaOrigen.Code))
+                    {
+                        dataService.Delete<Preference>(preference[i]);
+                        newPreferenceOrigen.Code = MonedaOrigen.Code;
+                        newPreferenceOrigen.Tipo = "Origen";
+                        dataService.Insert<Preference>(newPreferenceOrigen);
+                    }
+                    else if (!preference[i].Tipo.Equals("Destino") && !preference[i].Code.Equals(MonedaDestino.Code))
+                    {
+                        dataService.Delete<Preference>(preference[i]);
+                        newPreferenceDestino.Code = MonedaDestino.Code;
+                        newPreferenceDestino.Tipo = "Destino";
+                        dataService.Insert<Preference>(newPreferenceDestino);
+                    }
+                }
             }
         }
         #endregion
@@ -322,7 +405,7 @@ namespace Divisas2.ViewModels
                 return;
             }
             // Se almacena el Item Seleccionado
-            dataService.InsertOrUpdate(rate);
+            SaveItemSelected(OrigenRate, DestinoRate);
 
             decimal amountConverted = Amount / (decimal)SourceRate * (decimal)TargetRate;
             Message = string.Format("{0:N2} = {1:N2}", Amount, amountConverted);
