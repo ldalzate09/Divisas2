@@ -27,7 +27,8 @@
                 ItemsSource="{Binding Rates}"
                 SelectedValue="{Binding Path=SourceRate, Mode=TwoWay}"
                 HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
+                VerticalOptions="Center"
+                SelectedItem="{Binding OrigenRate, Mode=TwoWay}">
             </control:BindablePicker>
             <StackLayout
                 Orientation="Horizontal">
@@ -53,7 +54,8 @@
                 ItemsSource="{Binding Rates}"
                 SelectedValue="{Binding Path=TargetRate, Mode=TwoWay}"
                 HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
+                VerticalOptions="Center"
+                SelectedItem="{Binding DestinoRate, Mode=TwoWay}">
             </control:BindablePicker>
             <Button
                 Command="{Binding ConvertCommand}"

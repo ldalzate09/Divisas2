@@ -1,8 +1,4 @@
 ﻿using Divisas2.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Xamarin.Forms;
 
@@ -13,7 +9,6 @@ namespace Divisas2
         public App()
         {
             InitializeComponent();
-
             MainPage = new NavigationPage(new MainPage());
         }
 

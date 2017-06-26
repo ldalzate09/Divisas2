@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SQLite.Net.Attributes;
 
 namespace Divisas2.Models
 {
@@ -196,6 +197,7 @@ namespace Divisas2.Models
     {
         public double TaxRate { get; set; }
 
+        [PrimaryKey]
         public string Code { get; set; }
 
         public string Name { get; set; }
