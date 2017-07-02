@@ -305,63 +305,49 @@ namespace Divisas2.ViewModels
 
         private void ConsultarPreferencias(Rate RateShow)
         {
-            var preference = new List<Preference>();
-            preference = dataService.Get<Preference>(false);
+            var preference = dataService.First<Preference>(false);
 
-            for (int i = 0; i < preference.Count; i++)
+            if (preference != null)
             {
-                if (preference[i].Code.Equals(RateShow.Code))
+                if (preference.CodeOrigen.Equals(RateShow.Code))
                 {
-                    if (preference[i].Tipo.Equals("Origen"))
-                    {
-                        OrigenRate = RateShow;
-                        break;
-                    }
-                    else
-                    {
-                        DestinoRate = RateShow;
-                        break;
-                    }
+                    OrigenRate = RateShow;
+                }
+                else if (preference.CodeDestino.Equals(RateShow.Code))
+                {
+                    DestinoRate = RateShow;
                 }
             }
         }
 
         private void SaveItemSelected(Rate MonedaOrigen, Rate MonedaDestino)
         {
-            var preference = new List<Preference>();
-            preference = dataService.Get<Preference>(false);
+            var preference = dataService.First<Preference>(false);
 
-            var newPreferenceOrigen = new Preference();
-            var newPreferenceDestino = new Preference();
-
-            if (preference.Count == 0)
+            if (preference == null)
             {
-                newPreferenceOrigen.Code = MonedaOrigen.Code;
-                newPreferenceOrigen.Tipo = "Origen";
-                dataService.Insert<Preference>(newPreferenceOrigen);
-
-                newPreferenceDestino.Code = MonedaDestino.Code;
-                newPreferenceDestino.Tipo = "Destino";
-                dataService.Insert<Preference>(newPreferenceDestino);
+                Preference newPreferencia = new Preference();
+                newPreferencia.CodeOrigen = MonedaOrigen.Code;
+                newPreferencia.CodeDestino = MonedaDestino.Code;
+                dataService.Insert<Preference>(newPreferencia);
             }
             else
             {
-                for (int i = 0; i < preference.Count; i++)
+               if (!preference.CodeOrigen.Equals(MonedaOrigen.Code))
                 {
-                    if (!preference[i].Tipo.Equals("Origen") && !preference[i].Code.Equals(MonedaOrigen.Code))
-                    {
-                        dataService.Delete<Preference>(preference[i]);
-                        newPreferenceOrigen.Code = MonedaOrigen.Code;
-                        newPreferenceOrigen.Tipo = "Origen";
-                        dataService.Insert<Preference>(newPreferenceOrigen);
-                    }
-                    else if (!preference[i].Tipo.Equals("Destino") && !preference[i].Code.Equals(MonedaDestino.Code))
-                    {
-                        dataService.Delete<Preference>(preference[i]);
-                        newPreferenceDestino.Code = MonedaDestino.Code;
-                        newPreferenceDestino.Tipo = "Destino";
-                        dataService.Insert<Preference>(newPreferenceDestino);
-                    }
+                    var preferenciaDestino = preference.CodeDestino;
+                    dataService.Delete<Preference>(preference);
+                    preference.CodeOrigen = MonedaOrigen.Code;
+                    preference.CodeDestino = preferenciaDestino;
+                    dataService.Insert<Preference>(preference);
+                }
+                else if (!preference.CodeDestino.Equals(MonedaDestino.Code))
+                {
+                    var preferenciaOrigen = preference.CodeOrigen;
+                    dataService.Delete<Preference>(preference);
+                    preference.CodeDestino = MonedaDestino.Code;
+                    preference.CodeOrigen = preferenciaOrigen;
+                    dataService.Insert<Preference>(preference);
                 }
             }
         }

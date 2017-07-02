@@ -195,19 +195,33 @@ namespace Divisas2.Models
 
     public class Rate
     {
+        [PrimaryKey, AutoIncrement]
+        public int RateId { get; set; }
+
         public double TaxRate { get; set; }
 
-        [PrimaryKey]
         public string Code { get; set; }
 
         public string Name { get; set; }
+
+        public override int GetHashCode()
+        {
+            return RateId;
+        }
     }
 
     public class Preference
     {
-        [PrimaryKey]
-        public string Code { get; set; }
+        [PrimaryKey, AutoIncrement]
+        public int PreferenceId { get; set; }
 
-        public string Tipo { get; set; }
+        public string CodeOrigen { get; set; }
+
+        public string CodeDestino { get; set; }
+
+        public override int GetHashCode()
+        {
+            return PreferenceId;
+        }
     }
 }
