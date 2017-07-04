@@ -195,7 +195,8 @@ namespace Divisas2.ViewModels
                 {
                     IsRunning = false;
                     IsEnabled = false;
-                    await App.Current.MainPage.DisplayAlert("Error", checkConnetion.Message, "Aceptar");
+                    //await App.Current.MainPage.DisplayAlert("Error", checkConnetion.Message, "Aceptar");
+                    MessageMode = checkConnetion.Message;
                     return;
                 }
             }
@@ -215,7 +216,7 @@ namespace Divisas2.ViewModels
             {          
                 var client = new HttpClient();
                 client.BaseAddress = new Uri("https://openexchangerates.org");
-                var url = "/api/latest.json?app_id=f490efbcd52d48ee98fd62cf33c47b9e";
+                var url = "/api/latest.json?app_id=a0be258cf52c49c6b4f15f4c6a02e60f";
                 var response = await client.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
